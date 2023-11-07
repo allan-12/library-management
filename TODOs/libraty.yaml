@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Library API
-  version: 1.0.0  
+  version: 1.0.1
   description: STD22001
 servers:
   - url: https://library.com
@@ -50,7 +50,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/CrupdateBook'  # Utilisation  "CrupdateBook"
+                $ref: '#/components/schemas/CrupdateBook'
       responses:
         200:
           description: The list of created or updated books
@@ -112,9 +112,47 @@ paths:
       responses:
         204:
           description: Author deleted successfully
+  /books/{bookId}/authors/{authorId}:
+    put:
+      summary: Update book's author
+      operationId: updateBookAuthor
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the book to update
+        - in: path
+          name: authorId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: The ID of the new author
+      responses:
+        200:
+          description: Book's author updated successfully
+
+  /books/authors:
+    put:
+      summary: Update book's author using a list
+      operationId: updateBooksAuthors
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UpdateBookAuthor'
+      responses:
+        200:
+          description: Books' authors updated successfully
+
 components:
   schemas:
-    CrupdateBook:  # Nouveau composant CrupdateBook
+    CrupdateBook:
       type: object
       properties:
         id:
@@ -134,7 +172,7 @@ components:
           format: date
     Book:
       allOf:
-        - $ref: '#/components/schemas/CrupdateBook'  # Utilisation de l'héritage
+        - $ref: '#/components/schemas/CrupdateBook'
         - type: object
           properties:
             author:
@@ -152,3 +190,16 @@ components:
           enum:
             - M
             - F
+    UpdateBookAuthor:
+      type: object
+      properties:
+        bookId:
+          type: string
+          format: uuid
+          description: The ID of the book to update
+        authorId:
+          type: string
+          format: uuid
+          description: The ID of the new author
+
+
