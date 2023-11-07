@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Library API
-  version: 1.0.0
+  version: 1.0.0  
   description: STD22001
 servers:
   - url: https://library.com
@@ -50,7 +50,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Book'
+                $ref: '#/components/schemas/CrupdateBook'  # Utilisation  "CrupdateBook"
       responses:
         200:
           description: The list of created or updated books
@@ -114,15 +114,13 @@ paths:
           description: Author deleted successfully
 components:
   schemas:
-    Book:
+    CrupdateBook:  # Nouveau composant CrupdateBook
       type: object
       properties:
         id:
           type: string
         bookName:
           type: string
-        author:
-          $ref: '#/components/schemas/Author'
         pageNumbers:
           type: integer
         topic:
@@ -134,6 +132,13 @@ components:
         releaseDate:
           type: string
           format: date
+    Book:
+      allOf:
+        - $ref: '#/components/schemas/CrupdateBook'  # Utilisation de l'héritage
+        - type: object
+          properties:
+            author:
+              $ref: '#/components/schemas/Author'
     Author: 
       type: object
       properties:
