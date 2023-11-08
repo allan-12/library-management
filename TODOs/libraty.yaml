@@ -317,7 +317,41 @@ paths:
           description: All topics removed from the book
         404:
           description: Book not found
-
+  /authorsTopics:
+    get:
+      summary: Get a list of AuthorTopics
+      description: Get a list of AuthorTopics with optional filters.
+      operationId: getAuthorsTopics
+      parameters:
+        - in: query
+          name: authorId
+          description: Filter AuthorTopics by author ID
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: authorName
+          description: Filter AuthorTopics by author name
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: authorSex
+          description: Filter AuthorTopics by author sex
+          required: false
+          schema:
+            type: string
+            enum:
+              - M
+              - F
+      responses:
+        200:
+          description: The list of AuthorTopics
+          content:
+            application/json:
+              schema:
+                type: array
 components:
   schemas:
     Book:
