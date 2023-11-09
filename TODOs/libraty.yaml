@@ -12,6 +12,7 @@ paths:
       description: The returned books are ordered by updated datetime.
       operationId: getBooks
       parameters:
+        - $ref: '#/components/parameters/queryPagination'
         - in: query
           name: bookName
           description: Filter return books by given name
@@ -19,33 +20,12 @@ paths:
           schema:
             type: string
         - in: query
-          name: releaseDateStart
-          description: Filter books by release date start
+          name: releaseDate
+          description: Filter by the date of the release date range
           required: false
           schema:
             type: string
             format: date
-        - in: query
-          name: releaseDateEnd
-          description: Filter books by release date end
-          required: false
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: page
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            default: 1  # Valeur par défaut pour la page
-        - in: query
-          name: pageSize
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            default: 50  # Valeur par défaut pour la taille de la page
       responses:
         200:
           description: The list of filtered books
@@ -74,12 +54,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Book'
+  /books/{bookId}/authors/{authorId}:
+    put:
+      tags:
+        - books
+      summary: Attach author to a book
+      description: Attach author to a book by id.
+      operationId: attachAuthorToBook
+      parameters:
+        - in: path
+          name: bookId
+          description: The id of the book
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: authorId
+          description: The id of the author
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+         description: Author successfully attached to the book
   /authors:
     get:
-      summary: Get all authors 
-      description: Get a list of authors, optionally filtered by name.
+      summary: Get all authors
+      description: Get a list of all authors.
       operationId: getAuthors
       parameters:
+        - $ref: '#/components/parameters/pathPagination'
         - in: query
           name: authorName
           description: Filter authors by name
@@ -88,7 +92,7 @@ paths:
             type: string
       responses:
         200:
-          description: The list of authors
+          description: The list of filtered authors
           content:
             application/json:
               schema:
@@ -96,263 +100,66 @@ paths:
                 items:
                   $ref: '#/components/schemas/Author'
     put:
-      summary: Create or update an author
-      description: Create a new author or update an existing one.
-      operationId: createUpdateAuthor
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Author'
-      responses:
-        200:
-          description: The author has been created or updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Author'
-        404:
-          description: Author not found
-    delete:
-      summary: Delete an author by ID
-      operationId: deleteAuthorById
-      parameters:
-        - in: path
-          name: authorId
-          description: The ID of the author to delete
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        204:
-          description: Author deleted successfully
-        404:
-          description: Author not found
-  /topics:
-    get:
-      summary: Get all topics
-      description: Get a list of topics, optionally filtered by name.
-      operationId: getTopics
-      parameters:
-        - in: query
-          name: topicName
-          description: Filter topics by name
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: page
-          description: Page number for pagination
-          required: false
-          schema:
-            type: integer
-            default: 1  # Valeur par défaut pour la page
-        - in: query
-          name: pageSize
-          description: Number of items per page
-          required: false
-          schema:
-            type: integer
-            default: 50  # Valeur par défaut pour la taille de la page
-      responses:
-        200:
-          description: The list of topics
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Topic'
-    put:
-      summary: Create or update a topic
-      description: Create a new topic or update an existing one.
-      operationId: createUpdateTopic
-      parameters:
-        - in: path
-          name: topicId
-          description: The ID of the topic to create or update
-          required: true
-          schema:
-            type: string
-            format: uuid
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Topic'
-      responses:
-        200:
-          description: The topic has been created or updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Topic'
-        404:
-          description: Topic not found
-    delete:
-      summary: Delete a topic by ID
-      operationId: deleteTopicById
-      parameters:
-        - in: path
-          name: topicId
-          description: The ID of the topic to delete
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        204:
-          description: Topic deleted successfully
-        404:
-          description: Topic not found
-  /books/{bookId}/topics/{topicId}:
-    put:
-      summary: Update book's topics
-      operationId: updateBookTopics
-      parameters:
-        - in: path
-          name: bookId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the book to update topics
-        - in: path
-          name: topicId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the topic to update
-      responses:
-        200:
-          description: Book's topics updated successfully
-        404:
-          description: Book or topic not found
-    delete:
-      summary: Remove a topic from a book
-      operationId: removeBookTopic
-      parameters:
-        - in: path
-          name: bookId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the book
-        - in: path
-          name: topicId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the topic to remove
-      responses:
-        204:
-          description: Topic removed
-        404:
-          description: Book or topic not found
-  /books/topics:
-    get:
-      summary: Get all topics for a book
-      description: Get a list of topics associated with a book.
-      operationId: getBookTopics
-      parameters:
-        - in: path
-          name: bookId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the book to retrieve topics for
-      responses:
-        200:
-          description: The list of topics associated with the book
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Topic'
-        404:
-          description: Book not found
-  /books/{bookId}/topics:
-    put:
-      summary: Update book's topics in bulk
-      operationId: updateBookTopicsBulk
-      parameters:
-        - in: path
-          name: bookId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the book to update topics for
+      summary: Create or update authors
+      operationId: crupdateAuthors
       requestBody:
         content:
           application/json:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Topic'
+                $ref: '#/components/schemas/Author'
       responses:
         200:
-          description: Book's topics updated successfully
-        404:
-          description: Book not found
-    delete:
-      summary: Remove all topics from a book
-      operationId: removeAllBookTopics
-      parameters:
-        - in: path
-          name: bookId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: The ID of the book to remove topics from
-      responses:
-        204:
-          description: All topics removed from the book
-        404:
-          description: Book not found
-  /authorsTopics:
-    get:
-      summary: Get a list of AuthorTopics
-      description: Get a list of AuthorTopics with optional filters.
-      operationId: getAuthorsTopics
-      parameters:
-        - in: query
-          name: authorId
-          description: Filter AuthorTopics by author ID
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - in: query
-          name: authorName
-          description: Filter AuthorTopics by author name
-          required: false
-          schema:
-            type: string
-        - in: query
-          name: authorSex
-          description: Filter AuthorTopics by author sex
-          required: false
-          schema:
-            type: string
-            enum:
-              - M
-              - F
-      responses:
-        200:
-          description: The list of AuthorTopics
+          description: The list of created or updated authors
           content:
             application/json:
               schema:
                 type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+    delete:
+      summary: Delete authors
+      operationId: deleteAuthors
+      responses:
+        200:
+          description: Authors successfully deleted
+  /books/authors:
+    put:
+      tags:
+        - books
+        - author
+      summary: Attach authors to books
+      description: Attach many authors to many books by id.
+      operationId: attachAuthorsToBooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/UpdateBookAuthor"
+      responses:
+        200:
+          description: Authors successfully attached to the books
+
 components:
+  parameters:
+    queryPagination:
+      name: page
+      in: query
+      description: Number of the page
+      schema:
+        type: integer
+        default: 1
+    pathPagination:
+      name: page
+      required: true
+      in: path
+      description: number of the page
+      schema: 
+        type: integer
+        default: 1
   schemas:
     Book:
       type: object
@@ -374,12 +181,32 @@ components:
         releaseDate:
           type: string
           format: date
+    crupdateBooks:
+      type: object
+      
+      allOf:
+          - $ref: '#/components/schemas/Book'
+          - type: object
+          - required:
+            - id
+            - bookName
+            - pageNumbers
+            - topic
+            - releaseDate
+    UpdateBookAuthor:
+      type: object
+      properties:
+        bookId:
+          type: string
+          description: The ID of the book to update/attach an author
+        authorId:
+           type: string
+           description: The ID of the author to attach to the book
     Author:
       type: object
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
         sex:
@@ -387,11 +214,3 @@ components:
           enum:
             - M
             - F
-    Topic:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        topicName:
-          type: string
