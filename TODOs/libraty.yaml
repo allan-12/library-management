@@ -354,7 +354,89 @@ paths:
       responses:
         200:
           description: The book has been returned  
-
+  /books/borrowed:
+    get:
+      tags:
+        - Books
+      summary: Get the list of borrowed books
+      operationId: getBorrowedBooks
+      responses:
+        200:
+          description: The list of borrowed books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+  /books/available:
+    get:
+      tags:
+        - Books
+      summary: Get the list of available books
+      operationId: getAvailableBooks
+      responses:
+        200:
+          description: The list of available books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+  /visitors/{visitorId}/activities:
+    get:
+      tags:
+        - "Visitors"
+      summary: Get visitor activities
+      operationId: getVisitorActivities
+      parameters:
+        - name: visitorId
+          in: path
+          description: ID of the visitor to retrieve activities
+          schema:
+            type: string
+          required: true
+        - name: startDate
+          in: query
+          description: Start date for filtering activities
+          schema:
+            type: string
+            format: date-time  # Modification pour inclure l'heure précise
+          required: false
+        - name: endDate
+          in: query
+          description: End date for filtering activities
+          schema:
+            type: string
+            format: date-time  # Modification pour inclure l'heure précise
+          required: false
+      responses:
+        200:
+          description: The list of activities for the visitor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VisitorActivity"
+  /permissions:
+    get:
+      security:
+        - oauth2: [read]
+      tags:
+        - "Permissions"
+      summary: Get user permissions
+      operationId: getUserPermissions
+      responses:
+        200:
+          description: The list of user permissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Permission"
 components:
   responses:
     '400':
@@ -375,8 +457,44 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ServerError'
+  securitySchemes:
+      oauth2:
+        type: oauth2
+        flows:
+          authorizationCode:
+            authorizationUrl: https://example.com/oauth/authorize
+            tokenUrl: https://example.com/oauth/token
+            scopes:
+              read: Grants read access
+              write: Grants write access
+              admin: Grants access to admin operations
 
   schemas:
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    VisitorActivity:
+      type: object
+      properties:
+        bookId:
+          type: string
+          description: The identifier of the book involved in the activity
+        bookName:
+          type: string
+          description: The name of the book involved in the activity
+        activityType:
+          type: string
+          description: The type of activity (emprunt or rendu)
+        activityDate:
+          type: string
+          format: date-time
+          description: The date and time when the activity occurred
     Visitor:
       type: object
       properties:
@@ -403,6 +521,8 @@ components:
             - ROMANCE
             - COMEDY
             - OTHER
+            - available
+            - borrowed
         releaseDate:
           type: string
           format: date
