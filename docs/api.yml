@@ -354,7 +354,36 @@ paths:
       responses:
         200:
           description: The book has been returned  
-
+  /books/borrowed:
+    get:
+      tags:
+        - Books
+      summary: Get the list of borrowed books
+      operationId: getBorrowedBooks
+      responses:
+        200:
+          description: The list of borrowed books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+  /books/available:
+    get:
+      tags:
+        - Books
+      summary: Get the list of available books
+      operationId: getAvailableBooks
+      responses:
+        200:
+          description: The list of available books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
 components:
   responses:
     '400':
@@ -403,6 +432,8 @@ components:
             - ROMANCE
             - COMEDY
             - OTHER
+            - available
+            - borrowed
         releaseDate:
           type: string
           format: date
