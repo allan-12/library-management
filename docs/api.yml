@@ -420,6 +420,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/VisitorActivity"
+  /permissions:
+    get:
+      security:
+        - oauth2: [read]
+      tags:
+        - "Permissions"
+      summary: Get user permissions
+      operationId: getUserPermissions
+      responses:
+        200:
+          description: The list of user permissions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Permission"
 components:
   responses:
     '400':
@@ -440,8 +457,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ServerError'
+  securitySchemes:
+      oauth2:
+        type: oauth2
+        flows:
+          authorizationCode:
+            authorizationUrl: https://example.com/oauth/authorize
+            tokenUrl: https://example.com/oauth/token
+            scopes:
+              read: Grants read access
+              write: Grants write access
+              admin: Grants access to admin operations
 
   schemas:
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
     VisitorActivity:
       type: object
       properties:
