@@ -384,6 +384,42 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Book"
+  /visitors/{visitorId}/activities:
+    get:
+      tags:
+        - "Visitors"
+      summary: Get visitor activities
+      operationId: getVisitorActivities
+      parameters:
+        - name: visitorId
+          in: path
+          description: ID of the visitor to retrieve activities
+          schema:
+            type: string
+          required: true
+        - name: startDate
+          in: query
+          description: Start date for filtering activities
+          schema:
+            type: string
+            format: date-time  # Modification pour inclure l'heure précise
+          required: false
+        - name: endDate
+          in: query
+          description: End date for filtering activities
+          schema:
+            type: string
+            format: date-time  # Modification pour inclure l'heure précise
+          required: false
+      responses:
+        200:
+          description: The list of activities for the visitor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VisitorActivity"
 components:
   responses:
     '400':
@@ -406,6 +442,22 @@ components:
             $ref: '#/components/schemas/ServerError'
 
   schemas:
+    VisitorActivity:
+      type: object
+      properties:
+        bookId:
+          type: string
+          description: The identifier of the book involved in the activity
+        bookName:
+          type: string
+          description: The name of the book involved in the activity
+        activityType:
+          type: string
+          description: The type of activity (emprunt or rendu)
+        activityDate:
+          type: string
+          format: date-time
+          description: The date and time when the activity occurred
     Visitor:
       type: object
       properties:
