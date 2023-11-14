@@ -276,6 +276,39 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Author"
+  /visitors:
+    get:
+      tags:
+        - "Visitors"
+      summary: Get all visitors
+      operationId: getVisitors
+      responses:
+        200:
+          description: The list of visitors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Visitor"
+    post:
+      tags:
+        - "Visitors"
+      summary: Create a new visitor
+      operationId: createVisitor
+      requestBody:
+        description: Information about the new visitor
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Visitor"
+      responses:
+        200:
+          description: The visitor has been created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visitor"
 
 components:
   responses:
@@ -297,7 +330,17 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ServerError'
+
   schemas:
+    Visitor:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        reference:
+          type: string
     Book:
       type: object
       properties:
