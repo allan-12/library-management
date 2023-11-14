@@ -309,6 +309,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Visitor"
+  /books/{bookId}/borrow:
+    post:
+      tags:
+        - "Books"
+      summary: Borrow a book
+      operationId: borrowBook
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to borrow
+          schema:
+            type: string
+          required: true
+        - name: visitorId
+          in: query
+          description: ID of the visitor borrowing the book
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: The book has been borrowed
+
+  /books/{bookId}/return:
+    post:
+      tags:
+        - "Books"
+      summary: Return a borrowed book
+      operationId: returnBook
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of the book to return
+          schema:
+            type: string
+          required: true
+        - name: visitorId
+          in: query
+          description: ID of the visitor returning the book
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: The book has been returned  
 
 components:
   responses:
